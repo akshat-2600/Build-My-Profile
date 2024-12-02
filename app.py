@@ -66,7 +66,7 @@ def submit():
 
     #Handle Profile Picture Upload
     profile_picture = request.files["profilePicture"]
-    fileName = None
+    filename = None
     if profile_picture:
         filename = os.path.join(app.config["UPLOAD_FOLDER"], profile_picture.filename)
         profile_picture.save(filename)
