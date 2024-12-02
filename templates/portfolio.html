@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ fullName }} - Portfolio</title>
+    <link rel="stylesheet" href="portfolio.css">
+</head>
+<body>
+
+    <div class="portfolio-container">
+        <!-- Header Section -->
+        <header class="portfolio-header">
+            <div class="profile-picture">
+                <img src="{{ profilePicture }}" alt="{{ fullName }}'s Profile Picture">
+            </div>
+            <div class="profile-details">
+                <h1>{{ fullName }}</h1>
+                <p class="title">{{ jobTitle }}</p>
+                <p class="contact">
+                    <strong>Email:</strong> <a href="mailto:{{ email }}">{{ email }}</a> | 
+                    <strong>Phone:</strong> {{ phone }} | 
+                    <strong>LinkedIn:</strong> <a href="{{ linkedin }}" target="_blank">LinkedIn</a> | 
+                    <strong>GitHub:</strong> <a href="{{ github }}" target="_blank">GitHub</a>
+                </p>
+            </div>
+        </header>
+
+        <!-- Profile Summary Section -->
+        <section class="profile-summary">
+            <h2>About Me</h2>
+            <p>{{ summary }}</p>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="skills">
+            <h2>Skills</h2>
+            <ul>
+                {% for skill in skills.split(',') %}
+                    <li>{{ skill }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <!-- Education Section -->
+        <section class="education">
+            <h2>Education</h2>
+            <p><strong>Degree:</strong> {{ degree }}</p>
+            <p><strong>Institution:</strong> {{ institution }}</p>
+            <p><strong>Graduation Year:</strong> {{ gradYear }}</p>
+            {% if grades %}
+                <p><strong>Grades:</strong> {{ grades }}</p>
+            {% endif %}
+        </section>
+
+        <!-- Certifications Section -->
+        <section class="certifications">
+            <h2>Certifications</h2>
+            {% if certificationName %}
+                <p><strong>Certification:</strong> {{ certificationName }}</p>
+                <p><strong>Issued By:</strong> {{ certifyingAuthority }}</p>
+                <p><strong>Certification Date:</strong> {{ certificationDate }}</p>
+                <p><strong>Link:</strong> <a href="{{ certificationLink }}" target="_blank">View Certification</a></p>
+            {% else %}
+                <p>No certifications listed.</p>
+            {% endif %}
+        </section>
+
+        <!-- Work Experience Section -->
+        <section class="work-experience">
+            <h2>Work Experience</h2>
+            <p><strong>Company:</strong> {{ company }}</p>
+            <p><strong>Job Title:</strong> {{ jobTitle }}</p>
+            <p><strong>Duration:</strong> {{ duration }}</p>
+            <p><strong>Description:</strong> {{ description }}</p>
+        </section>
+
+        <!-- Projects Section -->
+        <section class="projects">
+            <h2>Projects</h2>
+            <div class="project-item">
+                <h3>{{ projectTitle }}</h3>
+                <p><strong>Description:</strong> {{ projectDescription }}</p>
+                <p><strong>Technologies Used:</strong> {{ technologiesUsed }}</p>
+                <p><strong>Project Link:</strong> <a href="{{ projectLink }}" target="_blank">View Project</a></p>
+            </div>
+        </section>
+
+        <!-- Languages Section -->
+        <section class="languages">
+            <h2>Languages</h2>
+            <p>{{ languages }}</p>
+            <p><strong>Proficiency:</strong> {{ languageProficiency }}</p>
+        </section>
+
+        <!-- Achievements Section -->
+        <section class="achievements">
+            <h2>Achievements</h2>
+            <ul>
+                {% for achievement in achievements.split(',') %}
+                    <li>{{ achievement }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <footer>
+            <p>&copy; 2024 {{ fullName }}. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
