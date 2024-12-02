@@ -18,13 +18,12 @@ body {
 }
 
 .profile-picture img {
-    width: 100%;  /* Ensure image width is responsive */
-    height: auto; /* Let the height adjust automatically based on the width */
-    max-width: 120px; /* Max width should be 120px */
-    max-height: 120px; /* Max height should be 120px */
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     border: 5px solid #fff;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    
 }
 
 
