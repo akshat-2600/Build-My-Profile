@@ -1,17 +1,23 @@
-/* General Styles */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
+/* Global Styles */
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #F8F9FA;
+    color: #333;
+    line-height: 1.6;
 }
 
 .container {
-    width: 80%;
-    margin: 0 auto;
-    padding: 20px;
+    width: 60%;
+    margin: 50px auto;
+    padding: 30px;
     background-color: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
 
@@ -22,12 +28,12 @@ header {
 
 header h1 {
     font-size: 36px;
-    color: #2c3e50;
+    color: #2C3E50;
 }
 
 header p {
     font-size: 18px;
-    color: #7f8c8d;
+    color: #7F8C8D;
 }
 
 form {
@@ -38,13 +44,14 @@ form {
 fieldset {
     border: 2px solid #3498db;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 10px;
+    background-color: #ECF0F1;
 }
 
 legend {
     font-size: 20px;
     color: #3498db;
-    padding: 0 10px;
+    font-weight: bold;
 }
 
 label {
@@ -64,10 +71,11 @@ textarea,
 input[type="file"] {
     width: 100%;
     padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #BDC3C7;
+    border-radius: 8px;
     font-size: 16px;
+    background-color: #F4F6F7;
 }
 
 textarea {
@@ -76,13 +84,14 @@ textarea {
 
 button.submit-btn {
     background-color: #3498db;
-    color: white;
+    color: #fff;
     padding: 12px 20px;
     font-size: 18px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     width: 100%;
+    transition: background-color 0.3s ease;
 }
 
 button.submit-btn:hover {
@@ -92,6 +101,6 @@ button.submit-btn:hover {
 /* Responsive Styles */
 @media (max-width: 768px) {
     .container {
-        width: 95%;
+        width: 90%;
     }
 }
