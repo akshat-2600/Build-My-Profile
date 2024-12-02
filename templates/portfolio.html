@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ fullName }} - Portfolio</title>
-    <link rel="stylesheet" href="static/portfolio.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='portfolio.css') }}">
 </head>
 <body>
 
@@ -32,12 +32,11 @@
             <p>{{ summary }}</p>
         </section>
 
-        <!-- Skills Section -->
         <section class="skills">
             <h2>Skills</h2>
             <ul>
                 {% for skill in skills.split(',') %}
-                    <li>{{ skill }}</li>
+                    <li>{{ skill.strip() }}</li>  <!-- Use strip to remove any extra whitespace -->
                 {% endfor %}
             </ul>
         </section>

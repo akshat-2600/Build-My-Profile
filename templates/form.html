@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Build My Profile - Portfolio Builder</title>
-    <link rel="stylesheet" href="static/form.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
 </head>
 <body>
 
     <div class="container">
         <header>
             <h1>Build My Profile</h1>
-            <p>Create your portfolio and showcase your work to the world!</p>
+            <p><b>Create your portfolio and showcase your work to the world!</b></p>
         </header>
         
         <form action="/submit" method="POST" enctype="multipart/form-data">
