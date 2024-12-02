@@ -17,15 +17,15 @@ body {
     height: 100vh;
 }
 
-.profile-picture img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 5px solid #fff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    
+.portfolio-container {
+    width: 80%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly translucent white background */
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
-
 
 /* Header Section */
 .portfolio-header {
@@ -41,7 +41,7 @@ body {
     border-radius: 50%;
     border: 5px solid #fff;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-
+    
 }
 
 .profile-details {
