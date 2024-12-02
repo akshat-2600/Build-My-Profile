@@ -30,10 +30,14 @@ def index():
 
 
 #Route to handle form submission and save data to MYSQL
-@app.route("/submit" , method=["POST"])
+@app.route("/submit" , methods=["POST"])
 def submit():
     full_name = request.form["fullName"]
-    email = request.fom["email"]
+    full_name = request.form.get("fullName")
+    if not full_name:
+        return "Full name is required", 400
+
+    email = request.form["email"]
     phone = request.form["phone"]
     birthdate = request.form["birthdate"]
     address = request.form["address"]
@@ -65,7 +69,7 @@ def submit():
     
 
     #Handle Profile Picture Upload
-    profile_picture = request.files["profilePicture"]
+    profile_picture = request.files.get("profilePicture")
     filename = None
     if profile_picture:
         filename = os.path.join(app.config["UPLOAD_FOLDER"], profile_picture.filename)
@@ -77,19 +81,20 @@ def submit():
 
     #Insert the form data into the database
     query = """
-    INSERT INTO portfolios (fullName, email, phone, birthdate, address, summary, skills, degree, institution, 
-                            gradYear, grades, certificationName, certifyingAuthority, certificationDate, certificationLink, 
-                            company, jobTitle, duration, description, languages, languageProficiency, 
-                            projectTitle, projectDescription, technologiesUsed, projectLink, achievements, 
-                            linkedin, github, personalWebsite, profilePicture)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """        
+    INSERT INTO portfolios (unique_id, fullName, email, phone, birthdate, address, summary, skills, degree, institution, 
+                        gradYear, grades, certificationName, certifyingAuthority, certificationDate, certificationLink, 
+                        company, jobTitle, duration, description, languages, languageProficiency, 
+                        projectTitle, projectDescription, technologiesUsed, projectLink, achievements, 
+                        linkedin, github, personalWebsite, profilePicture)
+   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
 
-    cursor.execute(query, (full_name, email, phone, birthdate, address, summary, skills, degree, institution, grad_year, 
-                           grades, certification_name, certifying_authority, certification_date, certification_link, 
-                           company, job_title, duration, description, languages, language_proficiency, project_title, 
-                           project_description, technologies_used, project_link, achievements, linkedin, github, 
-                           personal_website, filename))
+    cursor.execute(query, (unique_id, full_name, email, phone, birthdate, address, summary, skills, degree, institution, grad_year, 
+                       grades, certification_name, certifying_authority, certification_date, certification_link, 
+                       company, job_title, duration, description, languages, language_proficiency, project_title, 
+                       project_description, technologies_used, project_link, achievements, linkedin, github, 
+                       personal_website, filename))
+
     
     db.commit()
 
@@ -101,16 +106,24 @@ def submit():
 @app.route("/portfolio/<unique_id>")
 def portfolio(unique_id):
     #Fetch the user's portfolio dat from the database
-    query = "SELECT * FROM portfolios WHERE id = (SELECT id FROM portfolios WHERE inique_id = %s)"
-    
+    query = "SELECT * FROM portfolios WHERE unique_id = %s"        
     cursor.execute(query , (unique_id,))
     portfolio_data = cursor.fetchone()
 
 
     if portfolio_data:
-        return render_template("portfolio.html" , **portfolio_data)
+        # Convert the tuple to a dictionary (assuming the column names match the keys)
+        portfolio_columns = ["id","unique_id" , "fullName", "email", "phone", "birthdate", "address", "summary", "skills", 
+                            "degree", "institution", "gradYear", "grades", "certificationName", "certifyingAuthority", 
+                            "certificationDate", "certificationLink", "company", "jobTitle", "duration", "description", 
+                            "languages", "languageProficiency", "projectTitle", "projectDescription", "technologiesUsed", 
+                            "projectLink", "achievements", "linkedin", "github", "personalWebsite", "profilePicture"]
+        
+        portfolio_dict = dict(zip(portfolio_columns, portfolio_data))
+        return render_template("portfolio.html", **portfolio_dict)
     else:
-        return "Portfolio not found" , 404
+        return "Portfolio not found", 404
+
     
 
 
