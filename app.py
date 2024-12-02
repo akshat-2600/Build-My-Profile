@@ -86,7 +86,7 @@ def submit():
                         company, jobTitle, duration, description, languages, languageProficiency, 
                         projectTitle, projectDescription, technologiesUsed, projectLink, achievements, 
                         linkedin, github, personalWebsite, profilePicture)
-   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
     cursor.execute(query, (unique_id, full_name, email, phone, birthdate, address, summary, skills, degree, institution, grad_year, 
