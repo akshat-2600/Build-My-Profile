@@ -17,15 +17,16 @@ body {
     height: 100vh;
 }
 
-.portfolio-container {
-    width: 80%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 0.9); /* Slightly translucent white background */
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+.profile-picture img {
+    width: 100%;  /* Ensure image width is responsive */
+    height: auto; /* Let the height adjust automatically based on the width */
+    max-width: 120px; /* Max width should be 120px */
+    max-height: 120px; /* Max height should be 120px */
+    border-radius: 50%;
+    border: 5px solid #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
 
 /* Header Section */
 .portfolio-header {
@@ -41,6 +42,7 @@ body {
     border-radius: 50%;
     border: 5px solid #fff;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
 }
 
 .profile-details {
@@ -154,8 +156,13 @@ footer p {
     }
 
     .profile-picture img {
-        width: 100px;
-        height: 100px;
+        width: 100%;
+        height: auto;
+        max-width: 120px;
+        max-height: 120px;
+        border-radius: 50%;
+        border: 5px solid #fff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     .profile-details {

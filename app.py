@@ -75,6 +75,11 @@ def submit():
         filename = os.path.join(app.config["UPLOAD_FOLDER"], profile_picture.filename)
         profile_picture.save(filename)
 
+        #create URL relative to static folder
+        profile_picture_url = url_for('static', filename='uploads/' + profile_picture.filename)
+    else:
+        profile_picture_url = None
+
     
     #Generate a unique URL identifier
     unique_id = str(uuid.uuid4())
@@ -93,7 +98,7 @@ def submit():
                        grades, certification_name, certifying_authority, certification_date, certification_link, 
                        company, job_title, duration, description, languages, language_proficiency, project_title, 
                        project_description, technologies_used, project_link, achievements, linkedin, github, 
-                       personal_website, filename))
+                       personal_website, "uploads/" + profile_picture.filename))
 
     
     db.commit()

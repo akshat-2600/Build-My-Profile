@@ -12,8 +12,13 @@
         <!-- Header Section -->
         <header class="portfolio-header">
             <div class="profile-picture">
-                <img src="{{ profilePicture }}" alt="{{ fullName }}'s Profile Picture">
+                {% if profile_picture_url %}
+                    <img src="{{ profile_picture_url }}" alt="{{ fullName }}'s Profile Picture">
+                {% else %}
+                    <img src="{{ url_for('static', filename='default-profile.jpg') }}" alt="Default Profile Picture">
+                {% endif %}
             </div>
+            
             <div class="profile-details">
                 <h1>{{ fullName }}</h1>
                 <p class="title">{{ jobTitle }}</p>
