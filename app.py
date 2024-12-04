@@ -1,41 +1,32 @@
-from flask import Flask , request , redirect , render_template , url_for
-import mysql.connector
+from flask import Flask, request, redirect, render_template, url_for
 import os
 import uuid
+import json
 from datetime import datetime
 
-#Configure Flask app
+# Configure Flask app
 app = Flask(__name__)
 
-#Configure MYSQL connection
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="ATM263014@atm",
-    database="portfolio_db"
-
-)
-
-cursor = db.cursor()
-
-# Directory to store uploaded files
+# Directory to store uploaded files and user data
 UPLOAD_FOLDER = "static/uploads"
+DATA_FOLDER = "user_data"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
+# Create user data directory if it doesn't exist
+if not os.path.exists(DATA_FOLDER):
+    os.makedirs(DATA_FOLDER)
 
-
-#Route to display form
+# Route to display form
 @app.route("/")
 def index():
     return render_template("form.html")
 
 
-#Route to handle form submission and save data to MYSQL
-@app.route("/submit" , methods=["POST"])
+# Route to handle form submission and save data to a file
+@app.route("/submit", methods=["POST"])
 def submit():
-    full_name = request.form["fullName"]
-    full_name = request.form.get("fullName")
-    if not full_name:
+    fullName = request.form["fullName"]
+    if not fullName:
         return "Full name is required", 400
 
     email = request.form["email"]
@@ -67,78 +58,118 @@ def submit():
     github = request.form['github']
     personal_website = request.form['personalWebsite']
 
-    
-
-    #Handle Profile Picture Upload
+    # Handle Profile Picture Upload
     profile_picture = request.files.get("profilePicture")
-    filename = None
+    profile_picture_filename = None
     if profile_picture:
-        filename = os.path.join(app.config["UPLOAD_FOLDER"], profile_picture.filename)
-        profile_picture.save(filename)
+        profile_picture_filename = os.path.join(app.config["UPLOAD_FOLDER"], profile_picture.filename)
+        profile_picture.save(profile_picture_filename)
 
-    # Check if certificationDate is empty and set to None if it is
+    # Handle certificationDate
     if certification_date:
         try:
-            # Convert certificationDate to a datetime object
-            certification_date = datetime.strptime(certification_date, '%Y-%m-%d')  # Adjust format if needed
+            certification_date = datetime.strptime(certification_date, '%Y-%m-%d')
         except ValueError:
-            certification_date = None  # If the date is invalid, set to None
+            certification_date = None
     else:
         certification_date = None
 
-    #Generate a unique URL identifier
+    # Convert datetime to string (if needed)
+    if certification_date:
+        certification_date = certification_date.strftime('%Y-%m-%d')  # Convert to string format
+
+    # Generate a unique URL identifier
     unique_id = str(uuid.uuid4())
 
-    #Insert the form data into the database
-    query = """
-    INSERT INTO portfolios (unique_id, fullName, email, phone, birthdate, address, summary, skills, degree, institution, 
-                        gradYear, grades, certificationName, certifyingAuthority, certificationDate, certificationLink, 
-                        company, jobTitle, duration, description, languages, languageProficiency, 
-                        projectTitle, projectDescription, technologiesUsed, projectLink, achievements, 
-                        linkedin, github, personalWebsite, profilePicture)
-   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """
+    # Store the form data in a JSON file
+    user_data = {
+        "unique_id": unique_id,
+        "fullName": fullName,
+        "email": email,
+        "phone": phone,
+        "birthdate": birthdate,
+        "address": address,
+        "summary": summary,
+        "skills": skills,
+        "degree": degree,
+        "institution": institution,
+        "gradYear": grad_year,
+        "grades": grades,
+        "certificationName": certification_name,
+        "certifyingAuthority": certifying_authority,
+        "certificationDate": certification_date,  # This is now a string
+        "certificationLink": certification_link,
+        "company": company,
+        "jobTitle": job_title,
+        "duration": duration,
+        "description": description,
+        "languages": languages,
+        "languageProficiency": language_proficiency,
+        "projectTitle": project_title,
+        "projectDescription": project_description,
+        "technologiesUsed": technologies_used,
+        "projectLink": project_link,
+        "achievements": achievements,
+        "linkedin": linkedin,
+        "github": github,
+        "personalWebsite": personal_website,
+        "profilePicture": profile_picture_filename
+    }
 
-    cursor.execute(query, (unique_id, full_name, email, phone, birthdate, address, summary, skills, degree, institution, grad_year, 
-                       grades, certification_name, certifying_authority, certification_date, certification_link, 
-                       company, job_title, duration, description, languages, language_proficiency, project_title, 
-                       project_description, technologies_used, project_link, achievements, linkedin, github, 
-                       personal_website, filename))
+    # Save user data to a JSON file
+    user_file_path = os.path.join(DATA_FOLDER, f"{unique_id}.json")
+    with open(user_file_path, "w") as f:
+        json.dump(user_data, f)
 
-    
-    db.commit()
-
-    #Redirect user to their unique portfolio URL
-    return redirect(url_for("portfolio" , unique_id=unique_id))
+    # Redirect user to their unique portfolio URL
+    return redirect(url_for("portfolio", unique_id=unique_id))
 
 
-#Route to display portfolio using unique URL
-
+# Route to display portfolio using unique URL
 @app.route("/portfolio/<unique_id>")
 def portfolio(unique_id):
-    # Fetch the user's portfolio data from the database
-    query = "SELECT * FROM portfolios WHERE unique_id = %s"
-    cursor.execute(query, (unique_id,))
-    portfolio_data = cursor.fetchone()
+    # Fetch the user's portfolio data from the file
+    user_file_path = os.path.join(DATA_FOLDER, f"{unique_id}.json")
 
-    if portfolio_data:
-        # Convert the tuple to a dictionary (assuming the column names match the keys)
-        portfolio_columns = ["profilePicture","id", "unique_id", "fullName", "email", "phone", "birthdate", "address", "summary", "skills", 
-                             "degree", "institution", "gradYear", "grades", "certificationName", "certifyingAuthority", 
-                             "certificationDate", "certificationLink", "company", "jobTitle", "duration", "description", 
-                             "languages", "languageProficiency", "projectTitle", "projectDescription", "technologiesUsed", 
-                             "projectLink", "achievements", "linkedin", "github", "personalWebsite"]
-        
-        portfolio_dict = dict(zip(portfolio_columns, portfolio_data))
+    if os.path.exists(user_file_path):
+        with open(user_file_path, "r") as f:
+            portfolio_data = json.load(f)
+
+        # Convert certificationDate back to datetime if needed
+        if portfolio_data["certificationDate"]:
+            portfolio_data["certificationDate"] = datetime.strptime(portfolio_data["certificationDate"], '%Y-%m-%d')
 
         # Make sure the profile picture is passed correctly
-        portfolio_dict['profilePicture'] = url_for('static', filename='uploads/' + portfolio_dict['profilePicture'])
+        if portfolio_data['profilePicture']:
+            portfolio_data['profilePicture'] = url_for('static', filename='uploads/' + os.path.basename(portfolio_data['profilePicture']))
 
-        return render_template("portfolio.html", **portfolio_dict)
+        return render_template("portfolio.html", **portfolio_data)
     else:
         return "Portfolio not found", 404
 
+@app.route("/admin/users")
+def show_users():
+    # Query the database to get all users
+    query = "SELECT * FROM portfolios"
+    cursor.execute(query)
+    users_data = cursor.fetchall()
+
+    # Prepare column names for the table
+    portfolio_columns = ["profile_picture", "id", "unique_id", "fullName", "email", "phone", "birthdate", "address", "summary", "skills", 
+                         "degree", "institution", "gradYear", "grades", "certificationName", "certifyingAuthority", 
+                         "certificationDate", "certificationLink", "company", "jobTitle", "duration", "description", 
+                         "languages", "languageProficiency", "projectTitle", "projectDescription", "technologiesUsed", 
+                         "projectLink", "achievements", "linkedin", "github", "personalWebsite"]
+
+    # Create a list of dictionaries from the fetched data
+    users_list = []
+    for user in users_data:
+        user_dict = dict(zip(portfolio_columns, user))
+        users_list.append(user_dict)
+
+    # Render the data in a template
+    return render_template("show_users.html", users=users_list)
 
 
 if __name__ == "__main__":
-    app.run(port = 8080 , debug=True)
+    app.run(port=8080, debug=True)
