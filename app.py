@@ -2,6 +2,7 @@ from flask import Flask , request , redirect , render_template , url_for
 import mysql.connector
 import os
 import uuid
+from datetime import datetime
 
 #Configure Flask app
 app = Flask(__name__)
@@ -75,7 +76,16 @@ def submit():
         filename = os.path.join(app.config["UPLOAD_FOLDER"], profile_picture.filename)
         profile_picture.save(filename)
 
-    
+    # Check if certificationDate is empty and set to None if it is
+    if certification_date:
+        try:
+            # Convert certificationDate to a datetime object
+            certification_date = datetime.strptime(certification_date, '%Y-%m-%d')  # Adjust format if needed
+        except ValueError:
+            certification_date = None  # If the date is invalid, set to None
+    else:
+        certification_date = None
+
     #Generate a unique URL identifier
     unique_id = str(uuid.uuid4())
 
@@ -103,30 +113,30 @@ def submit():
 
 
 #Route to display portfolio using unique URL
+
 @app.route("/portfolio/<unique_id>")
 def portfolio(unique_id):
-    #Fetch the user's portfolio dat from the database
-    query = "SELECT * FROM portfolios WHERE unique_id = %s"        
-    cursor.execute(query , (unique_id,))
+    # Fetch the user's portfolio data from the database
+    query = "SELECT * FROM portfolios WHERE unique_id = %s"
+    cursor.execute(query, (unique_id,))
     portfolio_data = cursor.fetchone()
-
 
     if portfolio_data:
         # Convert the tuple to a dictionary (assuming the column names match the keys)
-        portfolio_columns = ["id","unique_id" , "fullName", "email", "phone", "birthdate", "address", "summary", "skills", 
-                            "degree", "institution", "gradYear", "grades", "certificationName", "certifyingAuthority", 
-                            "certificationDate", "certificationLink", "company", "jobTitle", "duration", "description", 
-                            "languages", "languageProficiency", "projectTitle", "projectDescription", "technologiesUsed", 
-                            "projectLink", "achievements", "linkedin", "github", "personalWebsite", "profilePicture"]
+        portfolio_columns = ["profilePicture","id", "unique_id", "fullName", "email", "phone", "birthdate", "address", "summary", "skills", 
+                             "degree", "institution", "gradYear", "grades", "certificationName", "certifyingAuthority", 
+                             "certificationDate", "certificationLink", "company", "jobTitle", "duration", "description", 
+                             "languages", "languageProficiency", "projectTitle", "projectDescription", "technologiesUsed", 
+                             "projectLink", "achievements", "linkedin", "github", "personalWebsite"]
         
         portfolio_dict = dict(zip(portfolio_columns, portfolio_data))
+
+        # Make sure the profile picture is passed correctly
+        portfolio_dict['profilePicture'] = url_for('static', filename='uploads/' + portfolio_dict['profilePicture'])
+
         return render_template("portfolio.html", **portfolio_dict)
     else:
         return "Portfolio not found", 404
-
-    
-
-
 
 
 
