@@ -1,0 +1,7 @@
+{
+    "MYSQL_HOST": "localhost",
+    "MYSQL_USER": "root",
+    "MYSQL_PASSWORD": "ATM263014@atm",
+    "MYSQL_DB": "portfolio_db"
+  }
+  
