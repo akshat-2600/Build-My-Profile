@@ -201,6 +201,7 @@ def show_users():
     users_list = []
     for user in users_data:
         user_dict = dict(zip(portfolio_columns, user))
+        user_dict["profile_picture"] = str(user_dict["profile_picture"])  # Convert to string
         users_list.append(user_dict)
 
     # Close the database connection

@@ -34,7 +34,7 @@
                         <td>{{ user.phone }}</td>
                         <td>
                             {% if user.profile_picture %}
-                                <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="Profile Picture" width="50">
+                            <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="Profile Picture" width="50">
                             {% else %}
                                 No Picture
                             {% endif %}
