@@ -5,8 +5,23 @@ import uuid
 import json
 from werkzeug.utils import secure_filename
 from datetime import datetime
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+import os
+
 
 app = Flask(__name__)
+
+# Configure Cloudinary (add these at the top of your file, after other imports)
+
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME', 'dcsgtgnbg'),
+    api_key=os.getenv('CLOUDINARY_API_KEY', '889146638363735'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET', '9Nx3D-lR8TfKHuEeyveIttmvFQo')
+)
+
+
 
 # Directory to store uploaded files
 UPLOAD_FOLDER = "static/uploads"
@@ -126,6 +141,10 @@ def index():
 # Route to handle form submission
 @app.route("/submit", methods=["POST"])
 def submit():
+
+    # Generate a unique URL identifier
+    unique_id = str(uuid.uuid4())
+
     full_name = request.form["full_name"]
     if not full_name:
         return "Full name is required", 400
@@ -164,37 +183,40 @@ def submit():
 
     # Handle Profile Picture Upload
     profile_picture = request.files.get("profile_picture")
-    profile_picture_filename = None
-    if profile_picture:
-        # Generate a unique filename
-        filename = secure_filename(profile_picture.filename)
-        unique_filename = f"{uuid.uuid4()}_{filename}"
+    profile_picture_url = None
+    if profile_picture and profile_picture.filename:
+        try:
+            # Upload to Cloudinary
+            upload_result = cloudinary.uploader.upload(
+                profile_picture,
+                folder="portfolio_pictures",
+                transformation=[
+                    {'width': 400, 'height': 400, 'crop': 'fill'}
+                ]
+            )
+            
+            # Get the secure URL of the uploaded image
+            profile_picture_url = upload_result['secure_url']
         
-        # Save the file
-        full_file_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
-        profile_picture.save(full_file_path)
-        
-        # Store only the filename in the database, not the full path
-        profile_picture_filename = unique_filename
+        except Exception as e:
+            print(f"Cloudinary upload error: {e}")
+            profile_picture_url = None
+    
+
         
 
     # Handle certificationDate
     if certification_date:
         try:
             certification_date = datetime.strptime(certification_date, '%Y-%m-%d')
+            certification_date = certification_date.strftime('%Y-%m-%d')
         except ValueError:
             certification_date = None
-    else:
-        certification_date = None
-
-    # Convert datetime to string (if needed)
-    if certification_date:
-        certification_date = certification_date.strftime('%Y-%m-%d')  # Convert to string format
-
-    # Generate a unique URL identifier
-    unique_id = str(uuid.uuid4())
+    
 
     # Insert user data into the database
+    connection = None
+    cursor = None
     try:
         connection = get_db_connection()
         cursor = connection.cursor()
@@ -222,7 +244,7 @@ def submit():
             certification_name, certifying_authority, certification_date, certification_link,
             company, job_title, duration, description, languages, language_proficiency,
             project_title, project_description, technologies_used, project_link,
-            achievements, linkedin, github, personal_website, profile_picture_filename
+            achievements, linkedin, github, personal_website, profile_picture_url
         ))
         connection.commit()
 
@@ -249,8 +271,10 @@ def portfolio(unique_id):
         cursor.execute(query, (unique_id,))
         portfolio_data = cursor.fetchone()
 
-        if portfolio_data['profile_picture']:
-            portfolio_data['profile_picture'] = url_for('static', filename=f'uploads/{portfolio_data["profile_picture"]}')
+        # No need to modify profile picture path, it's already a full URL
+        # If no picture, you can set a default
+        if not portfolio_data['profile_picture']:
+            portfolio_data['profile_picture'] = 'default_profile_url'  # Optional
 
         if portfolio_data:
             return render_template("portfolio.html", **portfolio_data)
