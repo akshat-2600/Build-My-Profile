@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ fullName }} - Portfolio</title>
+    <title>{{ full_name }} - Portfolio</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='portfolio.css') }}">
 </head>
 <body>
@@ -12,11 +12,19 @@
         <!-- Header Section -->
         <header class="portfolio-header">
             <div class="profile-picture">
-                <img src="{{ profilePicture }}" alt="{{ fullName }}'s Profile Picture">
+                
+            
+                {% if profile_picture %}
+                    <img src="{{ url_for('static', filename=profile_picture) }}" alt="Profile Picture" />
+                {% else %}
+                    <p>No profile picture uploaded.</p>
+                {% endif %}
+                
+                <!-- <img src="{{ profile_picture }}" alt="{{ full_name }}'s Profile Picture">  -->
             </div>
             <div class="profile-details">
-                <h1>{{ fullName }}</h1>
-                <p class="title">{{ jobTitle }}</p>
+                <h1>{{ full_name }}</h1>
+                <p class="title">{{ job_title }}</p>
                 <p class="contact">
                     <strong>Email:</strong> <a href="mailto:{{ email }}">{{ email }}</a> | 
                     <strong>Phone:</strong> {{ phone }} | 
@@ -46,7 +54,7 @@
             <h2>Education</h2>
             <p><strong>Degree:</strong> {{ degree }}</p>
             <p><strong>Institution:</strong> {{ institution }}</p>
-            <p><strong>Graduation Year:</strong> {{ gradYear }}</p>
+            <p><strong>Graduation Year:</strong> {{ grad_year }}</p>
             {% if grades %}
                 <p><strong>Grades:</strong> {{ grades }}</p>
             {% endif %}
@@ -55,11 +63,11 @@
         <!-- Certifications Section -->
         <section class="certifications">
             <h2>Certifications</h2>
-            {% if certificationName %}
-                <p><strong>Certification:</strong> {{ certificationName }}</p>
-                <p><strong>Issued By:</strong> {{ certifyingAuthority }}</p>
-                <p><strong>Certification Date:</strong> {{ certificationDate }}</p>
-                <p><strong>Link:</strong> <a href="{{ certificationLink }}" target="_blank">View Certification</a></p>
+            {% if certification_name %}
+                <p><strong>Certification:</strong> {{ certification_name }}</p>
+                <p><strong>Issued By:</strong> {{ certifying_authority }}</p>
+                <p><strong>Certification Date:</strong> {{ certification_date }}</p>
+                <p><strong>Link:</strong> <a href="{{ certification_link }}" target="_blank">View Certification</a></p>
             {% else %}
                 <p>No certifications listed.</p>
             {% endif %}
@@ -69,7 +77,7 @@
         <section class="work-experience">
             <h2>Work Experience</h2>
             <p><strong>Company:</strong> {{ company }}</p>
-            <p><strong>Job Title:</strong> {{ jobTitle }}</p>
+            <p><strong>Job Title:</strong> {{ job_title }}</p>
             <p><strong>Duration:</strong> {{ duration }}</p>
             <p><strong>Description:</strong> {{ description }}</p>
         </section>
@@ -78,10 +86,10 @@
         <section class="projects">
             <h2>Projects</h2>
             <div class="project-item">
-                <h3>{{ projectTitle }}</h3>
-                <p><strong>Description:</strong> {{ projectDescription }}</p>
-                <p><strong>Technologies Used:</strong> {{ technologiesUsed }}</p>
-                <p><strong>Project Link:</strong> <a href="{{ projectLink }}" target="_blank">View Project</a></p>
+                <h3>{{ project_title }}</h3>
+                <p><strong>Description:</strong> {{ project_description }}</p>
+                <p><strong>Technologies Used:</strong> {{ technologies_used }}</p>
+                <p><strong>Project Link:</strong> <a href="{{ project_link }}" target="_blank">View Project</a></p>
             </div>
         </section>
 
@@ -89,7 +97,7 @@
         <section class="languages">
             <h2>Languages</h2>
             <p>{{ languages }}</p>
-            <p><strong>Proficiency:</strong> {{ languageProficiency }}</p>
+            <p><strong>Proficiency:</strong> {{ language_proficiency }}</p>
         </section>
 
         <!-- Achievements Section -->
@@ -103,7 +111,7 @@
         </section>
 
         <footer>
-            <p>&copy; 2024 {{ fullName }}. All Rights Reserved.</p>
+            <p>&copy; 2024 {{ full_name }}. All Rights Reserved.</p>
         </footer>
     </div>
 

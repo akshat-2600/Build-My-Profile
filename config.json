@@ -1,7 +1,8 @@
 {
-    "MYSQL_HOST": "localhost",
-    "MYSQL_USER": "root",
-    "MYSQL_PASSWORD": "ATM263014@atm",
-    "MYSQL_DB": "portfolio_db"
+    "MYSQL_HOST": "mysql.railway.internal",
+    "MYSQL_USER": "snuyLbhWjpIlZpRaRTfHafrpjjTgraLd",
+    "MYSQL_PASSWORD": "snuyLbhWjpIlZpRaRTfHafrpjjTgraLd",
+    "MYSQL_DB": "railway",
+    "DATABASE_URL": "mysql://root:snuyLbhWjpIlZpRaRTfHafrpjjTgraLd@junction.proxy.rlwy.net:13573/railway"
   }
   
