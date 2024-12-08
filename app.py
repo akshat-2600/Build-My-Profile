@@ -249,7 +249,7 @@ def portfolio(unique_id):
         portfolio_data = cursor.fetchone()
 
         if portfolio_data['profile_picture']:
-            portfolio_data['profile_picture'] = url_for('static', filename='uploads/' + os.path.basename(portfolio_data['profile_picture_filename']))
+            portfolio_data['profile_picture'] = url_for('static', filename='uploads/' + os.path.basename(portfolio_data['profile_picture']))
 
         if portfolio_data:
             return render_template("portfolio.html", **portfolio_data)
