@@ -15,9 +15,7 @@
                 
             
                 {% if profile_picture %}
-                    <img src="{{ url_for('static', filename=profile_picture) }}" alt="Profile Picture" />
-                {% else %}
-                    <p>No profile picture uploaded.</p>
+                    <img src="{{ profile_picture }}" alt="Profile Picture">
                 {% endif %}
                 
                 <!-- <img src="{{ profile_picture }}" alt="{{ full_name }}'s Profile Picture">  -->

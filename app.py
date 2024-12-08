@@ -166,16 +166,17 @@ def submit():
     profile_picture = request.files.get("profile_picture")
     profile_picture_filename = None
     if profile_picture:
-        
+        # Generate a unique filename
         filename = secure_filename(profile_picture.filename)
+        unique_filename = f"{uuid.uuid4()}_{filename}"
         
-        filename = f"{uuid.uuid4()}_{filename}"
+        # Save the file
+        full_file_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_filename)
+        profile_picture.save(full_file_path)
         
-        profile_picture_filename = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        # Store only the filename in the database, not the full path
+        profile_picture_filename = unique_filename
         
-        profile_picture.save(profile_picture_filename)
-        #profile_picture_filename = profile_picture_filename.replace("\\", "/")
-     
 
     # Handle certificationDate
     if certification_date:
@@ -249,7 +250,7 @@ def portfolio(unique_id):
         portfolio_data = cursor.fetchone()
 
         if portfolio_data['profile_picture']:
-            portfolio_data['profile_picture'] = url_for('static', filename='uploads/' + os.path.basename(portfolio_data['profile_picture']))
+            portfolio_data['profile_picture'] = url_for('static', filename=f'uploads/{portfolio_data["profile_picture"]}')
 
         if portfolio_data:
             return render_template("portfolio.html", **portfolio_data)
