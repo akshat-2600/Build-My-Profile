@@ -8,12 +8,11 @@ from datetime import datetime
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-import os
 
 
 app = Flask(__name__)
 
-# Configure Cloudinary (add these at the top of your file, after other imports)
+
 
 cloudinary.config(
     cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME', 'dcsgtgnbg'),
@@ -23,29 +22,29 @@ cloudinary.config(
 
 
 
-# Directory to store uploaded files
+
 UPLOAD_FOLDER = "static/uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# Ensure the upload folder exists
+
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-# Directory to store user data (JSON files)
+
 DATA_FOLDER = "user_data"
 app.config["DATA_FOLDER"] = DATA_FOLDER
 
-# Ensure the data folder exists
+
 if not os.path.exists(DATA_FOLDER):
     os.makedirs(DATA_FOLDER)
 
-# Use DATABASE_URL from environment variables or a default placeholder
+
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "mysql://root:snuyLbhWjpIlZpRaRTfHafrpjjTgraLd@junction.proxy.rlwy.net:13573/railway"
 )
 
-# Parse the DATABASE_URL into components
+
 def parse_database_url(url):
     url = url.replace("mysql://", "")
     user_pass, host_db = url.split('@')
@@ -60,7 +59,7 @@ def parse_database_url(url):
         "database": database
     }
 
-# Establish a database connection
+
 def get_db_connection():
     db_config = parse_database_url(DATABASE_URL)
     connection = mysql.connector.connect(
@@ -72,14 +71,13 @@ def get_db_connection():
     )
     return connection
 
-# Create the necessary tables if they don't exist
+
 def create_tables():
     try:
-        # Establish the database connection
+        
         connection = get_db_connection()
         cursor = connection.cursor()
 
-        # Create the `portfolios` table if it doesn't already exist
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS portfolios (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -117,32 +115,28 @@ def create_tables():
         );
         """)
 
-        # Commit the changes
         connection.commit()
 
     except mysql.connector.Error as err:
         print(f"Error: {err}")
 
     finally:
-        # Ensure resources are closed properly
         if cursor:
             cursor.close()
         if connection:
             connection.close()
 
-# Initialize the tables
 create_tables()
 
-# Route to display form
+
 @app.route("/")
 def index():
     return render_template("form.html")
 
-# Route to handle form submission
+
 @app.route("/submit", methods=["POST"])
 def submit():
 
-    # Generate a unique URL identifier
     unique_id = str(uuid.uuid4())
 
     full_name = request.form["full_name"]
@@ -181,12 +175,10 @@ def submit():
 
 
 
-    # Handle Profile Picture Upload
     profile_picture = request.files.get("profile_picture")
     profile_picture_url = None
     if profile_picture and profile_picture.filename:
         try:
-            # Upload to Cloudinary
             upload_result = cloudinary.uploader.upload(
                 profile_picture,
                 folder="portfolio_pictures",
@@ -195,7 +187,6 @@ def submit():
                 ]
             )
             
-            # Get the secure URL of the uploaded image
             profile_picture_url = upload_result['secure_url']
         
         except Exception as e:
@@ -205,7 +196,6 @@ def submit():
 
         
 
-    # Handle certificationDate
     if certification_date:
         try:
             certification_date = datetime.strptime(certification_date, '%Y-%m-%d')
@@ -214,7 +204,6 @@ def submit():
             certification_date = None
     
 
-    # Insert user data into the database
     connection = None
     cursor = None
     try:
@@ -257,10 +246,9 @@ def submit():
         if connection:
             connection.close()
 
-    # Redirect to portfolio
     return redirect(url_for("portfolio", unique_id=unique_id))
 
-# Route to display portfolio
+
 @app.route("/portfolio/<unique_id>")
 def portfolio(unique_id):
     try:
@@ -271,10 +259,9 @@ def portfolio(unique_id):
         cursor.execute(query, (unique_id,))
         portfolio_data = cursor.fetchone()
 
-        # No need to modify profile picture path, it's already a full URL
-        # If no picture, you can set a default
+        
         if not portfolio_data['profile_picture']:
-            portfolio_data['profile_picture'] = 'default_profile_url'  # Optional
+            portfolio_data['profile_picture'] = 'default_profile_url'
 
         if portfolio_data:
             return render_template("portfolio.html", **portfolio_data)
